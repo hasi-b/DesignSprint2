@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80414ccda19dd4444a63cc0e369b5f2b, type: 3}
+  m_Name: Answer1
+  m_EditorClassIdentifier: 
+  NodeQuestion: Whats your name
+  NodeAnswer: 
+  Answers:
+  - {fileID: 11400000, guid: e5c55403170cade4994e6f8f83e1024a, type: 2}
+  - {fileID: 11400000, guid: 0020d8b5266dca444a5eb18176182294, type: 2}
+  TimeToAnswer: 0
+  ExpressionWeight: 0
