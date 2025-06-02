@@ -1,42 +1,45 @@
-// GameManager.cs - Main game controller with circular layout and fixes
+// GameManager.cs - Enhanced version with UILineRenderer for pattern drawing
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.UI.Extensions;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Game Settings")]
     public float gameTime = 30f;
     public int currentLevel = 1;
-    
+
     [Header("Level System")]
     public LevelData[] levels;
     public bool useRandomLevels = false;
-    
+
     [Header("UI References")]
     public Canvas gameCanvas;
-    public Slider timerSlider; // Changed from TextMeshProUGUI to Slider
+    public Slider timerSlider;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI feedbackText;
     public TextMeshProUGUI levelText;
     public Button restartButton;
     public Button nextLevelButton;
-    public LineRenderer lineRenderer;
-    
+
     [Header("Node Settings")]
     public GameObject nodePrefab;
     public Transform nodeParent;
-    public float circleRadius = 250f; // Radius for circular arrangement
-    public Vector2 centerOffset = Vector2.zero; // Offset from center of screen
-    
-    [Header("Line Renderer Settings")]
-    public Material lineMaterial; // Assign a material for the line
-    public float lineWidth = 5f;
+    public float circleRadius = 250f;
+    public Vector2 centerOffset = Vector2.zero;
+
+    [Header("Line Drawing Settings")]
+    public UILineRenderer uiLineRenderer; // Assign your UILineRenderer component
     public Color lineColor = Color.blue;
-    
+    public float lineWidth = 5f;
+    public Color completedLineColor = Color.green;
+    public Color errorLineColor = Color.red;
+    public float lineFadeTime = 1f; // Time to fade out lines after pattern check
+
     private List<WordNode> nodes = new List<WordNode>();
     private List<WordNode> currentPattern = new List<WordNode>();
     private float currentTime;
@@ -46,7 +49,11 @@ public class GameManager : MonoBehaviour
     private Camera gameCamera;
     private LevelData currentLevelData;
     private int patternsCompleted = 0;
-    
+
+    // Line drawing variables
+    private List<Vector2> currentLinePoints = new List<Vector2>();
+    private Vector2 currentMousePosition;
+
     [System.Serializable]
     public class LevelData
     {
@@ -54,7 +61,7 @@ public class GameManager : MonoBehaviour
         public string[] allWords;
         public SentencePattern[] correctSentences;
         public int targetScore;
-        
+
         [System.Serializable]
         public class SentencePattern
         {
@@ -63,7 +70,7 @@ public class GameManager : MonoBehaviour
             public int scoreValue;
         }
     }
-    
+
     [System.Serializable]
     public class PatternData
     {
@@ -71,66 +78,112 @@ public class GameManager : MonoBehaviour
         public string[] wordSequence;
         public int scoreValue;
     }
-    
+
     void Start()
     {
         gameCamera = Camera.main;
-        SetupLineRenderer();
-       
+        InitializeLineRenderer();
         SetupGame();
     }
-    
-    void SetupLineRenderer()
+
+    void InitializeLineRenderer()
     {
-        if (lineRenderer != null)
+        if (uiLineRenderer == null)
         {
-            lineRenderer.useWorldSpace = true; // Use world space
-            lineRenderer.startWidth = lineWidth;
-            lineRenderer.endWidth = lineWidth;
-            lineRenderer.positionCount = 0;
-            lineRenderer.sortingOrder = 10; // Make sure it renders on top
-            
-            // If no material is assigned, create a simple one
-            if (lineMaterial != null)
-            {
-                lineRenderer.material = lineMaterial;
-            }
-            else
-            {
-                // Create a simple material if none provided
-                Material defaultMat = new Material(Shader.Find("Sprites/Default"));
-                defaultMat.color = lineColor;
-                lineRenderer.material = defaultMat;
-            }
-            
-            // Set line color using gradient
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(lineColor, 0.0f), new GradientColorKey(lineColor, 1.0f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f) }
-            );
-            lineRenderer.colorGradient = gradient;
+            Debug.LogError("UILineRenderer not assigned! Please assign it in the inspector.");
+            return;
         }
+
+        // Set initial line renderer properties
+        uiLineRenderer.color = lineColor;
+        uiLineRenderer.LineThickness = lineWidth;
+        uiLineRenderer.Points = new Vector2[0]; // Start with no points
     }
-    
-    
+
     void Update()
     {
         if (!isGameActive) return;
-        
+
         UpdateTimer();
         HandleInput();
         UpdateLineRenderer();
     }
-    
+
+    void UpdateLineRenderer()
+    {
+        if (uiLineRenderer == null) return;
+
+        if (isDragging && currentPattern.Count > 0)
+        {
+            // Update line points based on current pattern and mouse position
+            UpdateCurrentLinePoints();
+            uiLineRenderer.Points = currentLinePoints.ToArray();
+        }
+    }
+
+    void UpdateCurrentLinePoints()
+    {
+        currentLinePoints.Clear();
+
+        // Add all connected nodes
+        for (int i = 0; i < currentPattern.Count; i++)
+        {
+            Vector2 nodePosition = GetNodeUIPosition(currentPattern[i]);
+            currentLinePoints.Add(nodePosition);
+        }
+
+        // Add current mouse position if dragging
+        if (isDragging && currentPattern.Count > 0)
+        {
+            Vector2 mouseUIPos = GetMouseUIPosition();
+            currentLinePoints.Add(mouseUIPos);
+        }
+    }
+
+    Vector2 GetNodeUIPosition(WordNode node)
+    {
+        if (node == null) return Vector2.zero;
+
+        RectTransform nodeRect = node.GetComponent<RectTransform>();
+        if (nodeRect == null) return Vector2.zero;
+
+        // Convert the node's anchored position to the line renderer's coordinate system
+        // Since UILineRenderer uses the same coordinate system as UI elements, we can use anchored position directly
+        return nodeRect.anchoredPosition;
+    }
+
+    Vector2 GetMouseUIPosition()
+    {
+        // Convert mouse screen position to UI position
+        Vector2 mousePos = Input.mousePosition;
+
+        // Convert screen position to local position relative to the line renderer's parent
+        RectTransform canvasRect = gameCanvas.GetComponent<RectTransform>();
+        Vector2 localPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect, mousePos, gameCanvas.worldCamera, out localPos);
+
+        return localPos;
+    }
+
     void SetupGame()
     {
         ClearNodes();
+        ClearLines();
         LoadCurrentLevel();
         CreateNodesInCircularPattern();
         ResetGame();
     }
-    
+
+    void ClearLines()
+    {
+        if (uiLineRenderer != null)
+        {
+            uiLineRenderer.Points = new Vector2[0];
+        }
+        currentLinePoints.Clear();
+    }
+
     void LoadCurrentLevel()
     {
         if (useRandomLevels)
@@ -142,10 +195,10 @@ public class GameManager : MonoBehaviour
             int levelIndex = Mathf.Clamp(currentLevel - 1, 0, levels.Length - 1);
             currentLevelData = levels[levelIndex];
         }
-        
+
         Debug.Log($"Loaded: {currentLevelData.levelName}");
     }
-    
+
     void CreateNodesInCircularPattern()
     {
         if (currentLevelData == null || currentLevelData.allWords == null)
@@ -153,82 +206,63 @@ public class GameManager : MonoBehaviour
             Debug.LogError("No level data available!");
             return;
         }
-        
-        // Randomize the word order
+
         string[] shuffledWords = ShuffleArray(currentLevelData.allWords);
-        
-        // Generate circular positions with random starting angle
         List<Vector2> positions = GenerateCircularPositions(shuffledWords.Length);
-        
+
         for (int i = 0; i < shuffledWords.Length; i++)
         {
             GameObject nodeObj = Instantiate(nodePrefab, nodeParent);
             WordNode node = nodeObj.GetComponent<WordNode>();
-            
+
             if (node == null)
             {
                 node = nodeObj.AddComponent<WordNode>();
             }
-            
-            // Setup RectTransform
+
             RectTransform rectTransform = nodeObj.GetComponent<RectTransform>();
             if (rectTransform == null)
             {
                 rectTransform = nodeObj.AddComponent<RectTransform>();
             }
-            
-            // Set size based on word length (dynamic sizing)
+
             float wordWidth = Mathf.Max(80f, shuffledWords[i].Length * 15f + 20f);
             rectTransform.sizeDelta = new Vector2(wordWidth, 50);
-            
-            // Set circular position
             rectTransform.anchoredPosition = positions[i];
-            
-            // Initialize node
+
             node.Initialize(i, shuffledWords[i], this);
             nodes.Add(node);
         }
     }
-    
+
     List<Vector2> GenerateCircularPositions(int count)
     {
         List<Vector2> positions = new List<Vector2>();
-        
-        // Random starting angle to randomize the circle
         float startAngle = Random.Range(0f, 360f);
-        
-        // Calculate angle step between nodes
         float angleStep = 360f / count;
-        
+
         for (int i = 0; i < count; i++)
         {
-            // Calculate angle for this node
             float angle = startAngle + (i * angleStep);
-            
-            // Add some random variation to make it less perfect
             angle += Random.Range(-10f, 10f);
-            
-            // Convert to radians
             float angleRad = angle * Mathf.Deg2Rad;
-            
-            // Calculate position on circle
+
             Vector2 position = new Vector2(
-                Mathf.Cos(angleRad) * circleRadius,
-                Mathf.Sin(angleRad) * circleRadius
+                Mathf.Cos(angleRad) * circleRadius*1.5f,
+                Mathf.Sin(angleRad) * circleRadius*1f
             ) + centerOffset;
-            
+
             positions.Add(position);
         }
-        
+
         return positions;
     }
-    
-    // Helper method to shuffle array
+
     private string[] ShuffleArray(string[] array)
     {
         string[] shuffled = new string[array.Length];
         System.Array.Copy(array, shuffled, array.Length);
-        
+
         for (int i = 0; i < shuffled.Length; i++)
         {
             string temp = shuffled[i];
@@ -236,10 +270,10 @@ public class GameManager : MonoBehaviour
             shuffled[i] = shuffled[randomIndex];
             shuffled[randomIndex] = temp;
         }
-        
+
         return shuffled;
     }
-    
+
     void ClearNodes()
     {
         foreach (WordNode node in nodes)
@@ -249,42 +283,37 @@ public class GameManager : MonoBehaviour
         }
         nodes.Clear();
     }
-    
+
     void ResetGame()
     {
         currentTime = gameTime;
-        totalScore = 0; // Reset total score for new level
+        totalScore = 0;
         patternsCompleted = 0;
         isGameActive = true;
         currentPattern.Clear();
         isDragging = false;
-        
+        ClearLines();
+
         UpdateUI();
         ShowFeedback($"Level {currentLevel}: Form sentences by connecting words!", Color.white);
-        
-        if (lineRenderer != null)
-        {
-            lineRenderer.positionCount = 0;
-        }
-        
-        // Hide next level button
+
         if (nextLevelButton != null)
             nextLevelButton.gameObject.SetActive(false);
     }
-    
+
     void UpdateTimer()
     {
         currentTime -= Time.deltaTime;
-        
+
         if (currentTime <= 0)
         {
             currentTime = 0;
             EndGame();
         }
-        
+
         UpdateUI();
     }
-    
+
     void HandleInput()
     {
         if (Input.GetMouseButtonDown(0))
@@ -299,28 +328,41 @@ public class GameManager : MonoBehaviour
         {
             EndDragging();
         }
+
+        // Update current mouse position for line drawing
+        if (isDragging)
+        {
+            currentMousePosition = GetMouseUIPosition();
+        }
     }
-    
+
     void StartDragging()
     {
         Vector2 mousePos = Input.mousePosition;
         WordNode hitNode = GetNodeAtPosition(mousePos);
-        
+
         if (hitNode != null)
         {
             isDragging = true;
             currentPattern.Clear();
             currentPattern.Add(hitNode);
             hitNode.SetHighlighted(true);
+
+            // Set line color to default
+            if (uiLineRenderer != null)
+            {
+                uiLineRenderer.color = lineColor;
+            }
+
             Debug.Log($"Started dragging from: {hitNode.GetWord()}");
         }
     }
-    
+
     void ContinueDragging()
     {
         Vector2 mousePos = Input.mousePosition;
         WordNode hitNode = GetNodeAtPosition(mousePos);
-        
+
         if (hitNode != null && !currentPattern.Contains(hitNode))
         {
             currentPattern.Add(hitNode);
@@ -328,114 +370,61 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Added to pattern: {hitNode.GetWord()}");
         }
     }
-    
+
     void EndDragging()
     {
         if (!isDragging) return;
-        
+
         isDragging = false;
-        
+
         // Clear highlights
         foreach (WordNode node in nodes)
         {
             node.SetHighlighted(false);
         }
-        
+
         // Check if pattern is valid
         CheckPattern();
-        
-        // Clear current pattern
-        currentPattern.Clear();
-        
-        if (lineRenderer != null)
-        {
-            lineRenderer.positionCount = 0;
-        }
     }
-    
+
     WordNode GetNodeAtPosition(Vector2 screenPosition)
     {
-        // Use GraphicRaycaster for UI elements
         GraphicRaycaster raycaster = gameCanvas.GetComponent<GraphicRaycaster>();
         if (raycaster == null)
         {
             Debug.LogError("No GraphicRaycaster found on game canvas!");
             return null;
         }
-        
+
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = screenPosition;
-        
+
         List<RaycastResult> results = new List<RaycastResult>();
         raycaster.Raycast(pointerEventData, results);
-        
+
         foreach (RaycastResult result in results)
         {
             WordNode node = result.gameObject.GetComponent<WordNode>();
             if (node == null)
                 node = result.gameObject.GetComponentInParent<WordNode>();
-            
+
             if (node != null)
             {
                 return node;
             }
         }
-        
+
         return null;
     }
-    
+
     public void OnNodeHovered(WordNode node)
     {
         if (!isDragging) return;
-        
+
         if (!currentPattern.Contains(node))
         {
             currentPattern.Add(node);
             node.SetHighlighted(true);
-        }
-    }
-    
-    void UpdateLineRenderer()
-    {
-        if (lineRenderer == null || !isDragging || currentPattern.Count < 1) 
-        {
-            if (lineRenderer != null)
-                lineRenderer.positionCount = 0;
-            return;
-        }
-        
-        lineRenderer.positionCount = currentPattern.Count;
-        
-        for (int i = 0; i < currentPattern.Count; i++)
-        {
-            // Get the RectTransform of the node
-            RectTransform nodeRect = currentPattern[i].GetComponent<RectTransform>();
-            
-            // Convert UI position to world position
-            Vector3 worldPos;
-            
-            // Check canvas render mode
-            if (gameCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                // For overlay canvas, convert screen position to world position
-                Vector3 screenPos = RectTransformUtility.WorldToScreenPoint(null, nodeRect.position);
-                worldPos = gameCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, gameCamera.nearClipPlane + 2f));
-            }
-            else if (gameCanvas.renderMode == RenderMode.ScreenSpaceCamera)
-            {
-                // For camera canvas, use the canvas camera
-                Canvas canvas = gameCanvas;
-                Camera canvasCamera = canvas.worldCamera ?? gameCamera;
-                Vector3 screenPos = RectTransformUtility.WorldToScreenPoint(canvasCamera, nodeRect.position);
-                worldPos = canvasCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, canvasCamera.nearClipPlane + 2f));
-            }
-            else // WorldSpace
-            {
-                worldPos = nodeRect.position;
-                worldPos.z = gameCamera.transform.position.z + 1f; // Ensure it's in front of camera
-            }
-            
-            lineRenderer.SetPosition(i, worldPos);
         }
     }
 
@@ -444,36 +433,65 @@ public class GameManager : MonoBehaviour
         if (currentPattern.Count < 2)
         {
             ShowError("Pattern too short! Connect at least 2 words.");
+            ShowPatternResult(false);
             return;
         }
 
         string[] currentWords = currentPattern.Select(n => n.GetWord()).ToArray();
 
-        // Check against current level's correct sentences
         foreach (var sentence in currentLevelData.correctSentences)
         {
             if (IsPatternMatch(currentWords, sentence.words))
             {
-                // Correct sentence found!
                 totalScore += sentence.scoreValue;
                 patternsCompleted++;
 
                 ShowSuccess($"Correct! '{string.Join(" ", currentWords)}' (+{sentence.scoreValue} points)");
+                ShowPatternResult(true);
 
-                // Immediately advance to next level after any correct sequence
                 AdvanceToNextLevel();
                 return;
             }
         }
 
-        // No match found
         ShowError($"Try again: '{string.Join(" ", currentWords)}'");
+        ShowPatternResult(false);
     }
 
-    // New method to handle level advancement
+    void ShowPatternResult(bool isCorrect)
+    {
+        if (uiLineRenderer == null) return;
+
+        // Change line color based on result
+        Color resultColor = isCorrect ? completedLineColor : errorLineColor;
+        uiLineRenderer.color = resultColor;
+
+        // Remove the mouse position from line points (keep only node connections)
+        if (currentPattern.Count > 1)
+        {
+            List<Vector2> finalPoints = new List<Vector2>();
+            foreach (WordNode node in currentPattern)
+            {
+                finalPoints.Add(GetNodeUIPosition(node));
+            }
+            uiLineRenderer.Points = finalPoints.ToArray();
+        }
+
+        // Clear the pattern after showing result
+        currentPattern.Clear();
+
+        // Fade out the line after a delay
+        StartCoroutine(FadeOutLine());
+    }
+
+    System.Collections.IEnumerator FadeOutLine()
+    {
+        yield return new WaitForSeconds(lineFadeTime);
+        ClearLines();
+    }
+
     void AdvanceToNextLevel()
     {
-        // Small delay to show the success message
         Invoke(nameof(GoToNextLevel), 1.5f);
     }
 
@@ -482,44 +500,38 @@ public class GameManager : MonoBehaviour
         currentLevel++;
         if (currentLevel > levels.Length)
         {
-            //currentLevel = 1; // Loop back to first level
             ShowFeedback("All levels complete! Starting over...", Color.yellow);
         }
         else
         {
             ShowFeedback($"Moving to Level {currentLevel}...", Color.cyan);
-            // Start the next level
             SetupGame();
         }
-
-        
     }
 
-    
-    
     bool IsPatternMatch(string[] current, string[] target)
     {
         if (current.Length != target.Length) return false;
-        
+
         for (int i = 0; i < current.Length; i++)
         {
             if (!current[i].Equals(target[i], System.StringComparison.OrdinalIgnoreCase))
                 return false;
         }
-        
+
         return true;
     }
-    
+
     void ShowSuccess(string message)
     {
         ShowFeedback(message, Color.green);
     }
-    
+
     void ShowError(string message)
     {
         ShowFeedback(message, Color.red);
     }
-    
+
     void ShowFeedback(string message, Color color)
     {
         if (feedbackText != null)
@@ -528,65 +540,63 @@ public class GameManager : MonoBehaviour
             feedbackText.color = color;
         }
     }
-    
+
     void UpdateUI()
     {
-        // Update timer slider instead of text
         if (timerSlider != null)
         {
-            timerSlider.value = currentTime / gameTime; // Normalized value between 0 and 1
+            timerSlider.value = currentTime / gameTime;
         }
-        
+
         if (scoreText != null)
         {
             scoreText.text = $"Score: {totalScore}";
         }
-        
+
         if (levelText != null)
         {
             string levelInfo = currentLevelData != null ? currentLevelData.levelName : $"Level {currentLevel}";
             levelText.text = $"{levelInfo} | Sentences: {patternsCompleted}/{(currentLevelData?.correctSentences?.Length ?? 0)}";
         }
     }
-    
+
     void EndGame()
     {
         isGameActive = false;
+        isDragging = false;
+        ClearLines();
         ShowFeedback($"Time's Up! Final Score: {totalScore}", Color.yellow);
-        
-        // Show next level button even if time runs out
+
         if (nextLevelButton != null)
             nextLevelButton.gameObject.SetActive(true);
     }
-    
+
     public void RestartGame()
     {
-        SetupGame(); // This will reset everything including score
+        SetupGame();
     }
-    
+
     public void NextLevel()
     {
         currentLevel++;
         if (currentLevel > levels.Length)
         {
-            currentLevel = 1; // Loop back to first level
+            currentLevel = 1;
             ShowFeedback("All levels complete! Starting over...", Color.yellow);
         }
-        
-        SetupGame(); // This will automatically hide the next level button
+
+        SetupGame();
     }
-    
+
     public void SetLevel(int levelNumber)
     {
         currentLevel = Mathf.Clamp(levelNumber, 1, levels.Length);
         SetupGame();
     }
-    
+
     public void ToggleRandomLevels(bool random)
     {
         useRandomLevels = random;
         SetupGame();
     }
-    
-  
 }
