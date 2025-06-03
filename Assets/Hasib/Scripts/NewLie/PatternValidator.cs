@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class PatternValidator : MonoBehaviour
 {
-    public static bool ValidatePattern(List<WordNode> pattern, GameManager.PatternData[] correctPatterns, out GameManager.PatternData matchedPattern, out int score)
+    public static bool ValidatePattern(List<WordNode> pattern, LieGameManager.PatternData[] correctPatterns, out LieGameManager.PatternData matchedPattern, out int score)
     {
         matchedPattern = null;
         score = 0;

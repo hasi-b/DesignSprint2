@@ -13,7 +13,7 @@ public class WordNode : MonoBehaviour, IPointerEnterHandler
 
     private int nodeId;
     private string word;
-    private GameManager gameManager;
+    private LieGameManager gameManager;
     private bool isHighlighted = false;
 
     void Awake()
@@ -62,7 +62,7 @@ public class WordNode : MonoBehaviour, IPointerEnterHandler
         }
     }
 
-    public void Initialize(int id, string nodeWord, GameManager manager)
+    public void Initialize(int id, string nodeWord, LieGameManager manager)
     {
         nodeId = id;
         word = nodeWord;
