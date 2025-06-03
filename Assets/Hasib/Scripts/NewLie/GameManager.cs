@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     public float gameTime = 30f;
     public int currentLevel = 1;
+    bool isGameRunning;
 
     [Header("Level System")]
     public LevelData[] levels;
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI feedbackText;
     public TextMeshProUGUI levelText;
+    public TextMeshProUGUI qustionText;
     public Button restartButton;
     public Button nextLevelButton;
 
@@ -173,6 +175,7 @@ public class GameManager : MonoBehaviour
         LoadCurrentLevel();
         CreateNodesInCircularPattern();
         ResetGame();
+        isGameRunning = true;
     }
 
     void ClearLines()
@@ -195,7 +198,7 @@ public class GameManager : MonoBehaviour
             int levelIndex = Mathf.Clamp(currentLevel - 1, 0, levels.Length - 1);
             currentLevelData = levels[levelIndex];
         }
-
+        qustionText.text = currentLevelData.levelName;
         Debug.Log($"Loaded: {currentLevelData.levelName}");
     }
 
@@ -316,7 +319,7 @@ public class GameManager : MonoBehaviour
 
     void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && isGameRunning)
         {
             StartDragging();
         }
@@ -492,11 +495,13 @@ public class GameManager : MonoBehaviour
 
     void AdvanceToNextLevel()
     {
+       isGameRunning = false;
         Invoke(nameof(GoToNextLevel), 1.5f);
     }
 
     void GoToNextLevel()
     {
+        isGameRunning = true;
         currentLevel++;
         if (currentLevel > levels.Length)
         {
@@ -543,7 +548,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateUI()
     {
-        if (timerSlider != null)
+        if (timerSlider != null && isGameRunning)
         {
             timerSlider.value = currentTime / gameTime;
         }
