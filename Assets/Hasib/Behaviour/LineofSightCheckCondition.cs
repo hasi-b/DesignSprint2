@@ -3,16 +3,16 @@ using Unity.Behavior;
 using UnityEngine;
 
 [Serializable, Unity.Properties.GeneratePropertyBag]
-[Condition(name: "LineofSightCheck", story: "Check [Player] With Line Of Sight [Detector]", category: "Conditions", id: "a097dbfc05d0bb9074ca9e34fe3bf6c9")]
-public partial class LineofSightCheckCondition : Condition
+[Condition(name: "LIne of sight check", story: "Check [Target] with line of sight [detector]", category: "Conditions", id: "cd4d0c1e62326ab773294facad43d309")]
+public partial class LIneOfSightCheckCondition : Condition
 {
-    [SerializeReference] public BlackboardVariable<GameObject> Player;
+    [SerializeReference] public BlackboardVariable<GameObject> Target;
     [SerializeReference] public BlackboardVariable<LineOfSightDetector> Detector;
 
     public override bool IsTrue()
     {
-        return Detector.Value.PerformDetection(Player.Value)!= null;
+        return Detector.Value.PerformDetection(Target)!= null;
     }
 
-   
+    
 }

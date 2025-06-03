@@ -2,58 +2,40 @@ using UnityEngine;
 
 public class RangeDetector : MonoBehaviour
 {
-    [SerializeField]
-    float detectionRadius;
-    [SerializeField]
-    LayerMask detectionMask;
-    GameObject detectedTarget;
-    [SerializeField]
-    bool showDetectVisuals;
-    [SerializeField]
-    LineOfSightDetector lineOfSightDetector;
-    public GameObject DetectedTarget { get => detectedTarget; set => detectedTarget = value; }
+    [Header("Detection Settings")]
+    [SerializeField] private float detectionRadius = 10f;
+    [SerializeField] private LayerMask detectionMask;
+    [SerializeField] private bool showDebugVisuals = true;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public GameObject DetectedTarget
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-       //UpdateDetector();
+        get;
+        set;
     }
 
     public GameObject UpdateDetector()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position,detectionRadius,detectionMask);
-        if (colliders.Length>0)
+        // Perform sphere check
+        Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, detectionMask);
+
+        if (colliders.Length > 0)
         {
             DetectedTarget = colliders[0].gameObject;
-           // lineOfSightDetector.PerformDetection(detectedTarget);
         }
         else
         {
             DetectedTarget = null;
-
         }
         return DetectedTarget;
     }
 
-    void OnDrawGizmos()
+    // Debug visualization
+    private void OnDrawGizmos()
     {
-        if(!showDetectVisuals) { return; }
-        Gizmos.color = Color.yellow;
+        if (!showDebugVisuals || this.enabled == false) return;
+
+        Gizmos.color = DetectedTarget ? Color.green : Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
 
-        if (DetectedTarget != null)
-        {
-           // Debug.Log("Detected");
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, detectionRadius);
-            //Gizmos.DrawLine(transform.position, DetectedTarget.transform.position);
-            //Gizmos.DrawSphere(DetectedTarget.transform.position, 0.2f);
-        }
     }
 }

@@ -5,13 +5,15 @@ using Action = Unity.Behavior.Action;
 using Unity.Properties;
 
 [Serializable, GeneratePropertyBag]
-[NodeDescription(name: "RangeDetectionObject", story: "Is [Player] on the Detection", category: "Action", id: "39d86fa7ca90565201f6a6641bffdc8d")]
-public partial class RangeDetectionObjectAction : Action
+[NodeDescription(name: "StartMiniGame", story: "Start Minigame from [GameManager]", category: "Action", id: "50c2c79f48ce3f74afbbade045372af0")]
+public partial class StartMiniGameAction : Action
 {
-    [SerializeReference] public BlackboardVariable<GameObject> Player;
+    [SerializeReference] public BlackboardVariable<GameManager> GameManager;
 
     protected override Status OnStart()
     {
+
+        GameManager.Value.EnableLieGame();
         return Status.Running;
     }
 
