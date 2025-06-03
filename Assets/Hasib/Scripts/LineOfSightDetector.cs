@@ -25,14 +25,30 @@ public class LineOfSightDetector : MonoBehaviour
                 Debug.DrawLine(transform.position + Vector3.up * m_detectionHeight,
                     potentialTarget.transform.position, Color.green);
             }
-            return hit.collider.gameObject;
+
+            if (IsTargetInViewCone(this.transform, potentialTarget.transform,60))
+            {
+                return hit.collider.gameObject;
+            }
+            else
+            {
+                return null;
+            }
+
+           
         }
         else
         {
             return null;
         }
     }
+    public bool IsTargetInViewCone(Transform player, Transform target, float viewAngle)
+    {
+        Vector3 directionToTarget = (target.position - player.position).normalized;
+        float angleToTarget = Vector3.Angle(player.forward, directionToTarget);
 
+        return angleToTarget <= viewAngle / 2f;
+    }
     private void OnDrawGizmos()
     {
         if (showDebugVisuals)

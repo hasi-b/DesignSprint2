@@ -184,77 +184,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c93fa3145d319c4eb37ee9a20c3e9db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameTime: 10
-  currentLevel: 1
-  levels:
-  - levelName: 'Who are you? '
-    allWords:
-    - I
-    - Am
-    - Chimex
-    - Hasib
-    correctSentences:
-    - sentenceName: I am chimex
-      words:
-      - I
-      - Am
-      - Chimex
-      scoreValue: 10
-    - sentenceName: I am Hasib
-      words:
-      - I
-      - Am
-      - Hasib
-      scoreValue: 20
-    targetScore: 0
-  - levelName: What Did you do
-    allWords:
-    - I
-    - flee
-    - from
-    - the
-    - shelter
-    - am
-    - going
-    - to
-    correctSentences:
-    - sentenceName: I flee from the shelter
-      words:
-      - I
-      - flee
-      - from
-      - 'the '
-      - shelter
-      scoreValue: 10
-    - sentenceName: I am going to the shelter
-      words:
-      - I
-      - am
-      - going
-      - to
-      - the
-      - shelter
-      scoreValue: 20
-    targetScore: 0
-  useRandomLevels: 0
-  gameCanvas: {fileID: 699912068}
-  timerSlider: {fileID: 916007184}
-  scoreText: {fileID: 2108456897}
-  feedbackText: {fileID: 1785753273}
-  levelText: {fileID: 473339316}
-  qustionText: {fileID: 1915419030}
-  restartButton: {fileID: 2062490562}
-  nextLevelButton: {fileID: 1930127567}
-  nodePrefab: {fileID: 4720233128359877957, guid: ddf474b0db5c7ad49b5a739cae43e078, type: 3}
-  nodeParent: {fileID: 1770763020}
-  circleRadius: 400
-  centerOffset: {x: 0, y: 0}
-  uiLineRenderer: {fileID: 1307007189}
-  lineColor: {r: 0, g: 1, b: 0.92681265, a: 1}
-  lineWidth: 5
-  completedLineColor: {r: 0, g: 1, b: 0.47143412, a: 1}
-  errorLineColor: {r: 0.5924529, g: 0.07042362, b: 0.07042362, a: 1}
-  lineFadeTime: 1
+  canvas: {fileID: 699912065}
+  lieGameManager: {fileID: 0}
+  playerCam: {fileID: 0}
+  player: {fileID: 0}
+  controller: {fileID: 0}
 --- !u!4 &15166813
 Transform:
   m_ObjectHideFlags: 0

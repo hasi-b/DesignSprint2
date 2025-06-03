@@ -12,6 +12,7 @@ public partial class SetMiniGameAction : Action
 
     protected override Status OnStart()
     {
+        Debug.Log("MiniGame");
         LieGame.Value.EnableLieGame();
         return Status.Running;
     }
