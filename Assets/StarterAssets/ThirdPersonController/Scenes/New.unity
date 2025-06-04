@@ -777,7 +777,7 @@ MonoBehaviour:
   - rid: 3955886782249959894
   - rid: 3955886782249959967
   - rid: 3955886787077079218
-  - rid: 3955886793378496583
+  - rid: 3955886787077079712
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -823,7 +823,7 @@ MonoBehaviour:
           m_Value1: 11936489756718687334
         Name: New Line Of Sight Detector
         m_Value: {fileID: 634025837}
-    - rid: 3955886793378496583
+    - rid: 3955886787077079712
       type: {class: 'BlackboardVariable`1[[System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]], mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -2733,7 +2733,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177671, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_RootOrder
@@ -3410,7 +3410,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: GroundLayers.m_Bits
