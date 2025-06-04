@@ -17,65 +17,7 @@ ModelImporter:
     removeConstantScaleCurves: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'RootPart2_M' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'Spine1_M' has translation
-      animation that will be discarded.\n\t'Spine1_M' has scale animation that will
-      be discarded.\n\t'Spine1Part1_M' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\t'Spine1Part2_M' has translation animation
-      that will be discarded.\n\t'Spine1Part2_M' has scale animation that will be
-      discarded.\n\t'Chest_M' has translation animation that will be discarded.\n\t'Chest_M'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'Chest_M'
-      has scale animation that will be discarded.\n\t'Neck_M' has translation animation
-      that will be discarded.\n\t'Neck_M' has scale animation that will be discarded.\n\t'NeckPart1_M'
-      has translation animation that will be discarded.\n\t'NeckPart1_M' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\t'NeckPart1_M'
-      has scale animation that will be discarded.\n\t'Head_M' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'CheekBoneJoint_R'
-      has translation animation that will be discarded.\n\t'CheekBoneJoint_L' has
-      translation animation that will be discarded.\n\t'Scapula_R' has translation
-      animation that will be discarded.\n\t'Scapula_R' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'Scapula_R' has scale
-      animation that will be discarded.\n\t'ShoulderPart2_R' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'Elbow_R'
-      has translation animation that will be discarded.\n\t'ElbowPart1_R' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\t'Wrist_R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'MiddleFinger1_R'
-      has translation animation that will be discarded.\n\t'MiddleFinger2_R' has
-      scale animation that will be discarded.\n\t'MiddleFinger3_R' has scale animation
-      that will be discarded.\n\t'ThumbFinger1_R' has translation animation that
-      will be discarded.\n\t'ThumbFinger2_R' has translation animation that will
-      be discarded.\n\t'ThumbFinger2_R' has scale animation that will be discarded.\n\t'ThumbFinger3_R'
-      has scale animation that will be discarded.\n\t'IndexFinger1_R' has translation
-      animation that will be discarded.\n\t'IndexFinger2_R' has translation animation
-      that will be discarded.\n\t'IndexFinger2_R' has scale animation that will be
-      discarded.\n\t'IndexFinger3_R' has scale animation that will be discarded.\n\t'PinkyFinger1_R'
-      has translation animation that will be discarded.\n\t'PinkyFinger1_R' has scale
-      animation that will be discarded.\n\t'PinkyFinger2_R' has scale animation that
-      will be discarded.\n\t'PinkyFinger3_R' has scale animation that will be discarded.\n\t'RingFinger1_R'
-      has translation animation that will be discarded.\n\t'RingFinger1_R' has scale
-      animation that will be discarded.\n\t'Scapula_L' has translation animation
-      that will be discarded.\n\t'Scapula_L' is inbetween humanoid transforms and
-      has rotation animation that will be discarded.\n\t'Scapula_L' has scale animation
-      that will be discarded.\n\t'ShoulderPart2_L' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'Elbow_L' has translation
-      animation that will be discarded.\n\t'ElbowPart1_L' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'Wrist_L' is inbetween
-      humanoid transforms and has rotation animation that will be discarded.\n\t'MiddleFinger2_L'
-      has scale animation that will be discarded.\n\t'MiddleFinger3_L' has scale
-      animation that will be discarded.\n\t'ThumbFinger2_L' has scale animation that
-      will be discarded.\n\t'ThumbFinger3_L' has scale animation that will be discarded.\n\t'IndexFinger2_L'
-      has scale animation that will be discarded.\n\t'IndexFinger3_L' has scale animation
-      that will be discarded.\n\t'PinkyFinger1_L' has scale animation that will be
-      discarded.\n\t'PinkyFinger2_L' has scale animation that will be discarded.\n\t'PinkyFinger3_L'
-      has scale animation that will be discarded.\n\t'RingFinger1_L' has scale animation
-      that will be discarded.\n\t'RingFinger2_L' has scale animation that will be
-      discarded.\n\t'RingFinger3_L' has scale animation that will be discarded.\n\t'Hip_R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'HipPart2_R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'Hip_L'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'HipPart2_L'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -238,7 +180,7 @@ ModelImporter:
       takeName: Take 001
       internalID: 6234510843852800090
       firstFrame: 340
-      lastFrame: 369
+      lastFrame: 365
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
