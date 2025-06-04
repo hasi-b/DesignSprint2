@@ -777,6 +777,7 @@ MonoBehaviour:
   - rid: 3955886782249959894
   - rid: 3955886782249959967
   - rid: 3955886787077079218
+  - rid: 3955886793378496583
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
@@ -822,6 +823,20 @@ MonoBehaviour:
           m_Value1: 11936489756718687334
         Name: New Line Of Sight Detector
         m_Value: {fileID: 634025837}
+    - rid: 3955886793378496583
+      type: {class: 'BlackboardVariable`1[[System.Collections.Generic.List`1[[UnityEngine.GameObject, UnityEngine.CoreModule]], mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 7363293714814692920
+          m_Value1: 7603537077615810616
+        Name: Waypoints
+        m_Value:
+        - {fileID: 148871156}
+        - {fileID: 2105247747}
+        - {fileID: 1239211880}
+        - {fileID: 722714211}
+        - {fileID: 496830873}
+        - {fileID: 1840985357}
 --- !u!136 &634025832
 CapsuleCollider:
   m_ObjectHideFlags: 0

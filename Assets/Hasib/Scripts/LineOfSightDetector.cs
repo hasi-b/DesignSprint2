@@ -10,7 +10,8 @@ public class LineOfSightDetector : MonoBehaviour
     private float m_detectionHeight = 3f;
 
     [SerializeField] private bool showDebugVisuals = true;
-
+    [SerializeField]
+    float viewAngle = 60;
     public GameObject PerformDetection(GameObject potentialTarget)
     {
         RaycastHit hit;
@@ -18,7 +19,8 @@ public class LineOfSightDetector : MonoBehaviour
         Physics.Raycast(transform.position + Vector3.up * m_detectionHeight,
             direction, out hit, m_detectionRange, m_playerLayerMask);
 
-        if (hit.collider != null && hit.collider.gameObject == potentialTarget)
+
+        if (hit.collider != null && hit.collider.gameObject == potentialTarget /*&& IsTargetInViewCone(this.transform,potentialTarget.transform,80)*/)
         {
             if (showDebugVisuals && this.enabled)
             {
@@ -26,11 +28,29 @@ public class LineOfSightDetector : MonoBehaviour
                     potentialTarget.transform.position, Color.green);
             }
             return hit.collider.gameObject;
+            //if (IsTargetInViewCone(this.transform,potentialTarget.transform,60))
+            //{
+               
+            //}
+            //else
+            //{
+            //    return null;
+            //}
+           
         }
         else
         {
             return null;
         }
+    }
+
+
+    public bool IsTargetInViewCone(Transform target)
+    {
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+
+        return angleToTarget <= viewAngle / 2f;
     }
 
     private void OnDrawGizmos()

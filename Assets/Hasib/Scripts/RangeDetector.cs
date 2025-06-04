@@ -29,6 +29,9 @@ public class RangeDetector : MonoBehaviour
         return DetectedTarget;
     }
 
+   
+
+
     // Debug visualization
     private void OnDrawGizmos()
     {
