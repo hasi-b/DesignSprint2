@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI.Extensions;
+using System.Collections;
 
 public class LieGameManager : MonoBehaviour
 {
+    [Header("HoodlumReaction")]
+    [SerializeField]Animator hoodlumAnimator;
     [Header("Game Settings")]
     public float gameTime = 30f;
     public int currentLevel = 1;
@@ -442,6 +445,49 @@ public class LieGameManager : MonoBehaviour
         }
     }
 
+    //Animator
+    #region 
+
+    public void SmoothSetBlendParameter(Animator animator, string parameterName, float targetValue, float duration)
+    {
+        StartCoroutine(LerpBlend(animator, parameterName, targetValue, duration));
+    }
+
+    private IEnumerator LerpBlend(Animator animator, string parameterName, float targetValue, float duration)
+    {
+        float timeElapsed = 0f;
+        float startValue = animator.GetFloat(parameterName);
+
+        while (timeElapsed < duration)
+        {
+            float newValue = Mathf.Lerp(startValue, targetValue, timeElapsed / duration);
+            animator.SetFloat(parameterName, newValue);
+
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        animator.SetFloat(parameterName, targetValue); // Ensure it ends exactly at target
+    }
+
+    #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     void CheckPattern()
     {
         if (currentPattern.Count < 2)
@@ -457,6 +503,13 @@ public class LieGameManager : MonoBehaviour
         {
             if (IsPatternMatch(currentWords, sentence.words))
             {
+
+                // SmoothSetBlendParameter(hoodlumAnimator,"x",sentence.scoreValue,2);
+                //hoodlumAnimator.SetFloat("x",sentence.scoreValue);
+
+                string stateName = sentence.scoreValue.ToString(); // e.g., "Reaction3"
+                hoodlumAnimator.CrossFade(stateName, 0.4f);
+
                 totalScore += sentence.scoreValue;
                 patternsCompleted++;
 

@@ -1,3 +1,4 @@
+using Cinemachine;
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.Windows;
@@ -14,6 +15,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     GameObject player;
     bool inUIMode;
+    [SerializeField]
+    CinemachineVirtualCamera hoodlumCam;
 
     public ThirdPersonController controller;
     Animator animator;
@@ -39,7 +42,7 @@ public class GameManager : MonoBehaviour
 
         controller.enabled = false; // disable the controller entirely
         
-
+        hoodlumCam.Priority = 13;
 
 
     }
@@ -50,5 +53,6 @@ public class GameManager : MonoBehaviour
         //playerCam.SetActive(true);
         //player.SetActive(true);
         controller.enabled = true;
+        hoodlumCam.Priority = 0;
     }
 }
