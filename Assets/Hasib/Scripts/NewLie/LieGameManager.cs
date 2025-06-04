@@ -72,7 +72,7 @@ public class LieGameManager : MonoBehaviour
         {
             public string sentenceName;
             public string[] words;
-            public int scoreValue;
+            public EnemyManager.ReactionType reaction;
         }
     }
 
@@ -507,13 +507,13 @@ public class LieGameManager : MonoBehaviour
                 // SmoothSetBlendParameter(hoodlumAnimator,"x",sentence.scoreValue,2);
                 //hoodlumAnimator.SetFloat("x",sentence.scoreValue);
 
-                string stateName = sentence.scoreValue.ToString(); // e.g., "Reaction3"
+                string stateName = sentence.reaction.ToString(); // e.g., "Reaction3"
                 hoodlumAnimator.CrossFade(stateName, 0.4f);
 
-                totalScore += sentence.scoreValue;
+               // totalScore += sentence.scoreValue;
                 patternsCompleted++;
 
-                ShowSuccess($"Correct! '{string.Join(" ", currentWords)}' (+{sentence.scoreValue} points)");
+                //ShowSuccess($"Correct! '{string.Join(" ", currentWords)}' (+{sentence.scoreValue} points)");
                 ShowPatternResult(true);
 
                 AdvanceToNextLevel();
