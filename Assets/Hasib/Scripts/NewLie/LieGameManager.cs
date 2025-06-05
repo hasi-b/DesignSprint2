@@ -64,7 +64,7 @@ public class LieGameManager : MonoBehaviour
 
     [SerializeField]
     int defaultExpressionValue = 4;
-
+    
     [System.Serializable]
     public class LevelData
     {
@@ -345,7 +345,7 @@ public class LieGameManager : MonoBehaviour
         if (currentTime <= 0)
         {
             currentTime = 0;
-            EndGame();
+            EndGame(false);
         }
 
         UpdateUI();
@@ -536,18 +536,25 @@ public class LieGameManager : MonoBehaviour
 
                 if (defaultExpressionValue < 1)
                 {
-                    EndGame();
+                    EndGame(true);
+                    
+                    return;
                 }
+
+                //void ShowUIPanelPass() => 
                 if (defaultExpressionValue > 5) 
                 {
 
-                    EndGame();
+                    EndGame(false);
+                    
+                    //Invoke(nameof(ShowUIPanelFail), 0.5f);
+                    return;
                 }
-
+                //void ShowUIPanelFail() => 
                 //string stateName = sentence.reaction.ToString(); // e.g., "Reaction3"
                 //hoodlumAnimator.CrossFade(stateName, 0.4f);
 
-               // totalScore += sentence.scoreValue;
+                // totalScore += sentence.scoreValue;
                 patternsCompleted++;
 
                 //ShowSuccess($"Correct! '{string.Join(" ", currentWords)}' (+{sentence.scoreValue} points)");
@@ -666,13 +673,17 @@ public class LieGameManager : MonoBehaviour
         }
     }
 
-    void EndGame()
+    void EndGame(bool result)
     {
+        isGameRunning = false;
         isGameActive = false;
         isDragging = false;
         ClearLines();
         ShowFeedback($"Time's Up! Final Score: {totalScore}", Color.yellow);
+        GameManager.instance.DisableLieGame(result);
+        //Invoke(nameof(DisableLieGame), 1f);
 
+        //void DisableLieGame() => 
         if (nextLevelButton != null)
             nextLevelButton.gameObject.SetActive(true);
     }

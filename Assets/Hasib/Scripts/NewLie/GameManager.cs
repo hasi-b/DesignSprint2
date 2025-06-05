@@ -1,6 +1,8 @@
 using Cinemachine;
 using StarterAssets;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
 
 public class GameManager : MonoBehaviour
@@ -25,7 +27,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     StarterAssetsInputs starterAssetsInputs;
+    [SerializeField]
+    GameObject Restart;
 
+    [SerializeField]
+    GameObject uiPanelPass;
+    [SerializeField]
+    GameObject uiPanelFail;
     private void Awake()
     {
         instance = this;
@@ -53,15 +61,38 @@ public class GameManager : MonoBehaviour
 
 
     }
-    public void DisableLieGame()
+
+    public void ReloadScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }
+    public void DisableLieGame(bool result)
     {
         canvas.SetActive(false);
         lieGameManager.SetActive(false);
         //playerCam.SetActive(true);
         //player.SetActive(true);
         controller.enabled = true;
-        hoodlumCam.Priority = 0;
+        //hoodlumCam.Priority = 0;
         EnablePlayer();
+        
+
+        if (result)
+        {
+            StartCoroutine(ShowPanelWithDelay(uiPanelPass));
+        }
+        else
+        {
+            StartCoroutine(ShowPanelWithDelay(uiPanelFail));
+        }
+
+    }
+    IEnumerator ShowPanelWithDelay(GameObject panel)
+    {
+        yield return new WaitForSeconds(1f);
+        panel.SetActive(true);
+        Restart.SetActive(true);
     }
 
     public void EnablePlayer()
