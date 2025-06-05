@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CustomBlends:
   - m_From: PlayerFollowCamera
-    m_To: Virtual Camera
+    m_To: Puzzlecam
     m_Blend:
       m_Style: 0
       m_Time: 2

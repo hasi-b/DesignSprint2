@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyManager : MonoBehaviour
 {
 
-    public  enum ReactionType { Angry, Mad, Smile, Surprised, Attack, Disbelief, PassThrough }
+    public  enum ReactionType {   Attack, Mad, Angry,  Disbelief, Surprised, Smile,  PassThrough }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

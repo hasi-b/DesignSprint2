@@ -59,6 +59,12 @@ public class LieGameManager : MonoBehaviour
     private List<Vector2> currentLinePoints = new List<Vector2>();
     private Vector2 currentMousePosition;
 
+
+    private Dictionary<int,EnemyManager.ReactionType> intToReactionType;
+
+    [SerializeField]
+    int defaultExpressionValue = 4;
+
     [System.Serializable]
     public class LevelData
     {
@@ -72,6 +78,7 @@ public class LieGameManager : MonoBehaviour
         {
             public string sentenceName;
             public string[] words;
+            public int expressionValue;
             public EnemyManager.ReactionType reaction;
         }
     }
@@ -86,6 +93,19 @@ public class LieGameManager : MonoBehaviour
 
     void OnEnable()
     {
+
+        intToReactionType = new Dictionary<int, EnemyManager.ReactionType>
+        {
+            { 0, EnemyManager.ReactionType.PassThrough },
+            { 1, EnemyManager.ReactionType.Smile },
+            { 2, EnemyManager.ReactionType.Surprised },
+            { 3, EnemyManager.ReactionType.Disbelief },
+            { 4, EnemyManager.ReactionType.Angry },
+            { 5, EnemyManager.ReactionType.Mad },
+            { 6, EnemyManager.ReactionType.Attack }
+        };
+
+
         gameCamera = Camera.main;
         InitializeLineRenderer();
         SetupGame();
@@ -480,7 +500,11 @@ public class LieGameManager : MonoBehaviour
 
 
 
-
+    void setEnemyExpression(int stateNo)
+    {
+        string stateName = intToReactionType[stateNo].ToString();
+        hoodlumAnimator.CrossFade(stateName, 0.4f);
+    }
 
 
 
@@ -506,9 +530,22 @@ public class LieGameManager : MonoBehaviour
 
                 // SmoothSetBlendParameter(hoodlumAnimator,"x",sentence.scoreValue,2);
                 //hoodlumAnimator.SetFloat("x",sentence.scoreValue);
+                defaultExpressionValue += sentence.expressionValue;
+                defaultExpressionValue = Mathf.Clamp(defaultExpressionValue, 0, 6);
+                setEnemyExpression(defaultExpressionValue);
 
-                string stateName = sentence.reaction.ToString(); // e.g., "Reaction3"
-                hoodlumAnimator.CrossFade(stateName, 0.4f);
+                if (defaultExpressionValue < 1)
+                {
+                    EndGame();
+                }
+                if (defaultExpressionValue > 5) 
+                {
+
+                    EndGame();
+                }
+
+                //string stateName = sentence.reaction.ToString(); // e.g., "Reaction3"
+                //hoodlumAnimator.CrossFade(stateName, 0.4f);
 
                // totalScore += sentence.scoreValue;
                 patternsCompleted++;
