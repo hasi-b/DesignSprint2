@@ -12,7 +12,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM 
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonController : MonoBehaviour
+    public class ThirdPersonController : MonoBehaviour, ICharacterPlacer
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -134,6 +134,10 @@ namespace StarterAssets
             }
         }
 
+        public bool cover { get ; set ; }
+        [SerializeField]
+        private bool autoMover;
+        private Vector3 autoMoverLocation;
 
         private void Awake()
         {
@@ -181,8 +185,15 @@ namespace StarterAssets
                 crouched =!crouched;
                 _input.crouch = false;
             }
+
+            if(autoMover && cover)
+            {
+                MoveToCover(autoMoverLocation);
+            }
            
         }
+
+       
 
         private void LateUpdate()
         {
@@ -428,6 +439,36 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+
+        public void BeginMoveToCover(Vector3 targetPos)
+        {
+            cover = true;
+            autoMover = true;
+            autoMoverLocation = targetPos;
+        }
+
+        private void MoveToCover(Vector3 moveLocation)
+        {
+            moveLocation.y = transform.position.y;
+           Vector3 moveDirection = (moveLocation-transform.position).normalized;
+            if (Vector3.Distance(transform.position, moveLocation) > 1f)
+            {
+                  
+                _animationBlend = SprintSpeed;
+                _controller.Move(moveDirection*SprintSpeed*Time.deltaTime) ;
+            }
+            else
+            {
+
+                autoMover = false;
+                autoMoverLocation = Vector3.zero;
+                
+            }
+            //Grounded = true;
+
+
+            //UpdateAnimator();
         }
     }
 }

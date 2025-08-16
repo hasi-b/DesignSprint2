@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -7,13 +8,14 @@ namespace StarterAssets
 {
 	public class StarterAssetsInputs : MonoBehaviour
 	{
+		public static Action OnCoverButtonPressedAction;
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
 		public bool crouch;
-
+		public bool cover;
 		[Header("Movement Settings")]
 		public bool analogMovement;
 
@@ -47,8 +49,15 @@ namespace StarterAssets
 
         public void OnCrouch(InputValue value)
         {
+			
             CrouchInput(value.isPressed);
         }
+
+		public void OnCover(InputValue value)
+		{
+            
+            CoverInput(value.isPressed);
+		}
 #endif
 
 
@@ -76,6 +85,12 @@ namespace StarterAssets
         {
             crouch = newCrouchState;
         }
+
+		public void CoverInput(bool newCoverState)
+		{
+			cover = newCoverState;
+			OnCoverButtonPressedAction?.Invoke();
+		}
 
         private void OnApplicationFocus(bool hasFocus)
 		{
